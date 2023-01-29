@@ -34,16 +34,18 @@ namespace AssetStudio
 
         private static Image<Bgra32> CutImage(Texture2D m_Texture2D, Sprite m_Sprite, Rectf textureRect, Vector2 textureRectOffset, SpriteSettings settingsRaw)
         {
+            // 原图大小: m_Sprite.m_Rect
+            // 图像在原图中的偏移：textureRectOffset
             var originalImage = m_Texture2D.ConvertToImage(false);
             if (originalImage != null)
             {
                 using (originalImage)
                 {
-                    var rectX = (int)Math.Floor(textureRect.x);
+                    var rectX = (int)Math.Floor(textureRect.x); // 图片在图集中的起点，左下角为0, 0
                     var rectY = (int)Math.Floor(textureRect.y);
-                    var rectRight = (int)Math.Ceiling(textureRect.x + textureRect.width);
+                    var rectRight = (int)Math.Ceiling(textureRect.x + textureRect.width);   // 图片在图集中的终点
                     var rectBottom = (int)Math.Ceiling(textureRect.y + textureRect.height);
-                    rectRight = Math.Min(rectRight, m_Texture2D.m_Width);
+                    rectRight = Math.Min(rectRight, m_Texture2D.m_Width);   // 终点不能超过原图大小
                     rectBottom = Math.Min(rectBottom, m_Texture2D.m_Height);
                     var rect = new Rectangle(rectX, rectY, rectRight - rectX, rectBottom - rectY);
                     var spriteImage = originalImage.Clone(x => x.Crop(rect));
@@ -101,7 +103,15 @@ namespace AssetStudio
                             // ignored
                         }
                     }
-
+                    // 调整图片大小为原图的大小
+                    ResizeOptions options2 = new ResizeOptions
+                    {
+                        Size = new Size((int)m_Sprite.m_Rect.width, (int)m_Sprite.m_Rect.height),
+                        Mode = ResizeMode.Manual,
+                        Position = AnchorPositionMode.BottomLeft,
+                        TargetRectangle = new Rectangle((int)textureRectOffset.X, (int)textureRectOffset.Y, spriteImage.Width, spriteImage.Height)
+                    };
+                    spriteImage.Mutate((x) => x.Resize(options2));
                     //Rectangle
                     spriteImage.Mutate(x => x.Flip(FlipMode.Vertical));
                     return spriteImage;

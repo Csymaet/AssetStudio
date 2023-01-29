@@ -12,7 +12,7 @@ namespace AssetStudioGUI
         public static bool ExportTexture2D(AssetItem item, string exportPath)
         {
             var m_Texture2D = (Texture2D)item.Asset;
-            if (Properties.Settings.Default.convertTexture)
+            if (Properties.Settings.Default.convertTexture) 
             {
                 var type = Properties.Settings.Default.convertType;
                 if (!TryExportFile(exportPath, item, "." + type.ToString().ToLower(), out var exportFullPath))
